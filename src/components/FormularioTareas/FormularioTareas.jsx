@@ -15,7 +15,6 @@ export const FormularioTareas = ({handleInputChange,handleSubmit,descripcion}) =
             className="form-control"
             id="tarea1"
             aria-describedby="descripcionText"
-            required
           />
           <div id="descripcionText" className="form-text">
             Es el texto de ayuda para la pagina

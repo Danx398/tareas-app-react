@@ -4,36 +4,41 @@ import { FormularioTareas } from "./components/FormularioTareas/FormularioTareas
 import { Header } from "./components/Header/Header";
 import { Tareas } from "./components/Tareas/Tareas";
 import { TareaReducer } from "./reducers/tareaReducer";
+import Swal from "sweetalert2";
 
 export const App = () => {
   const init = () => {
-    return JSON.parse(localStorage.getItem("tareas")) || []
+    return JSON.parse(localStorage.getItem("tareas")) || [];
   };
   const [state, dispatch] = useReducer(TareaReducer, [], init);
   const [descripcion, SetDescripcion] = useState("");
   useEffect(() => {
     //Estado
-    localStorage.setItem("tareas",JSON.stringify(state))
+    localStorage.setItem("tareas", JSON.stringify(state));
     //Arreglo de dependencias, una o mas dependencias o vacio
-  }, [state])
-  
+  }, [state]);
+
   const handleInputChange = (evento) => {
     SetDescripcion(evento.target.value);
   };
-  
+
   const handleSubmit = (evento) => {
     evento.preventDefault();
-    const tareaNueva = {
-      id: new Date().getTime(),
-      descripcion: descripcion,
-      realizado: false,
-    };
-    const action = {
-      type: "agregar",
-      payload: tareaNueva
+    if (descripcion == "") {
+      Swal.fire("No puede estar vacio","","error");
+    } else {
+      const tareaNueva = {
+        id: new Date().getTime(),
+        descripcion: descripcion,
+        realizado: false,
+      };
+      const action = {
+        type: "agregar",
+        payload: tareaNueva,
+      };
+      dispatch(action);
+      SetDescripcion("");
     }
-    dispatch(action)
-    SetDescripcion("")
   };
   const handleCambiar = (id) => {
     dispatch({
@@ -42,10 +47,27 @@ export const App = () => {
     });
   };
   const handleEliminar = (id) => {
-    dispatch({
-      type: "borrar",
-      payload: id,
-    });
+    Swal.fire({
+      title: 'Estas seguro de que quieres borrarlo',
+      text: "Una vez borrado no se puede recuperar",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, borrar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch({
+          type: "borrar",
+          payload: id,
+        });
+        Swal.fire(
+          'Deleted!',
+          'Your file has been deleted.',
+          'success'
+        )
+      }
+    })
   };
   //Para hacer que el footer funcione
   let terminadas = 0;
@@ -55,6 +77,9 @@ export const App = () => {
     }
   }
   let porcentaje = terminadas / state.length;
+  if (!porcentaje) {
+    porcentaje = 0;
+  }
   return (
     <>
       <Header />
