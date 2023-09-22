@@ -62,8 +62,8 @@ export const App = () => {
           payload: id,
         });
         Swal.fire(
-          'Deleted!',
-          'Your file has been deleted.',
+          'Eliminado',
+          'Tu tarea ha sido eliminada',
           'success'
         )
       }
